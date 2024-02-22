@@ -24,6 +24,6 @@ def detect_objects():
     return [result[0], result[1], result[2]]
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8080)
-    #from waitress import serve
-    #serve(app, host="0.0.0.0", port=80)
+    #app.run(host="0.0.0.0", port=8080)
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=80)
