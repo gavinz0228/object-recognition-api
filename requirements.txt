@@ -1,0 +1,6 @@
+flask
+yolov4
+tensorflow
+opencv-python-headless
+cvlib
+waitress
