@@ -23,9 +23,9 @@ def detect_objects():
 
     return [result[0], result[1], result[2]]
 
-@app.route("/camera")
+@app.route("/home")
 def camera():
-    return render_template("camera.html")
+    return render_template("home.html")
 
 if __name__ == '__main__':
     #app.run(host="0.0.0.0", port=8080)
