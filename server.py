@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 
 import json
 import base64
@@ -22,6 +22,10 @@ def detect_objects():
     os.remove(file_path)
 
     return [result[0], result[1], result[2]]
+
+@app.route("/camera")
+def camera():
+    return render_template("camera.html")
 
 if __name__ == '__main__':
     #app.run(host="0.0.0.0", port=8080)

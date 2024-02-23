@@ -1,0 +1,100 @@
+<!doctype html>
+    
+<head>
+    <style>
+    #video {
+        border: 1px solid black;
+        width: 320px;
+        height: 240px;
+    }
+
+    #photo {
+        border: 1px solid black;
+        width: 320px;
+        height: 240px;
+    }
+
+    #canvas {
+        display: none;
+    }
+
+    .camera {
+        width: 340px;
+        display: inline-block;
+    }
+
+    .output {
+        width: 340px;
+        display: inline-block;
+    }
+
+    #startbutton {
+        display: block;
+        position: relative;
+        margin-left: auto;
+        margin-right: auto;
+        bottom: 36px;
+        padding: 5px;
+        background-color: #6a67ce;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        font-size: 14px;
+        color: rgba(255, 255, 255, 1.0);
+        cursor: pointer;
+    }
+
+    .contentarea {
+        font-size: 16px;
+        font-family: Arial;
+        text-align: center;
+    }
+    </style>
+    <!--The title of the HTML document.-->
+    <title>Facial Image Recognition</title>
+</head>
+
+<body>
+    <div class="contentarea">
+        <h1>Facial Image Recognition</h1>
+
+
+
+        <input type="file" id="pic-upload">
+
+    </div>
+    
+    <script>
+
+    document.getElementById('pic-upload').onchange = function(e) {
+        const reader = new FileReader();
+        console.log(e.target)
+        reader.readAsDataURL(e.target.files[0]);
+        reader.onload = function()
+        {
+            
+            var binData = reader.result.substring(reader.result.indexOf(",") + 1);
+            console.log(binData);
+            axios.post('http://192.168.1.179:8080/detect_objects', {
+                format: 'png',
+                binData: binData
+              })
+              .then(function (response) {
+                console.log(response);
+                alert(JSON.stringify(response.data));
+              })
+              .catch(function (error) {
+                console.log(error);
+                alert(error);
+              });
+        };
+        reader.onerror = function()
+        {
+            alert("failed to load file");
+        };
+
+    };
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</body>
+
+</html>
