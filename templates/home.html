@@ -55,43 +55,102 @@
 <body>
     <div class="contentarea">
         <h1>Object Recognition</h1>
+        <img id="camera" src="http://192.168.1.181" crossorigin="*"/>
         <input type="file" id="pic-upload">
+        <canvas id="canvas" style="border:1px;"> </canvas>
+        <p id="message"></p>
 
     </div>
-    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+    
+    var count = 1;
+
+    function refresh(){
+
+        var camera = document.getElementById("camera");
+
+        var img = new Image();
+
+        camera.onload = function(){
+
+            if (count >= 6)
+            {
+                axios.get('http://192.168.1.181', {responseType: 'blob'})
+                .then(function (response) {
+                    var reader = new window.FileReader();
+                    reader.onload = function(){
+                        console.log(reader.result);
+                        var binData = reader.result.substring(reader.result.indexOf(",") + 1);
+                        recognizeObject(binData);
+                    };
+                    reader.readAsDataURL(response.data); 
+                })
+                .catch(function (error) {
+                console.log(error);
+
+                });
+
+                count = 1;
+            }
+            else
+            {
+                count += 1;
+            }
+
+            window.setTimeout(refresh, 100);
+        }
+        camera.onerror=function(){
+            window.setTimeout(refresh, 1000);
+        };
+        camera.src = "http://192.168.1.181?"  + new Date().getTime();
+        console.log("retake picture");
+        
+    }
+
+
+    refresh();
 
     document.getElementById('pic-upload').onchange = function(e) {
         const reader = new FileReader();
         console.log(e.target)
-        reader.readAsDataURL(e.target.files[0]);
         reader.onload = function()
         {
-            
             var binData = reader.result.substring(reader.result.indexOf(",") + 1);
             console.log(binData);
-            axios.post('http://192.168.1.179:8080/detect_objects', {
-                format: 'png',
+
+            recognizeObject(binData);
+
+        };
+        reader.onerror = function()
+        {
+            console.log("failed to load file");
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
+
+
+    function recognizeObject(binData)
+    {
+        //document.getElementById("message").innerHTML = " Sending new request";
+        axios.post('/detect_objects', {
+                format: 'jpg',
                 binData: binData
               })
               .then(function (response) {
                 console.log(response);
-                alert(JSON.stringify(response.data));
+                document.getElementById("message").innerHTML = JSON.stringify(response.data) + " " + new Date().getTime();
+                //alert(JSON.stringify(response.data));
               })
               .catch(function (error) {
                 console.log(error);
-                alert(error);
-              });
-        };
-        reader.onerror = function()
-        {
-            alert("failed to load file");
-        };
 
-    };
+              });
+    }
 
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 </body>
 
 </html>
